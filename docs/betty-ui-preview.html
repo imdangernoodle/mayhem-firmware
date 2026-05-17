@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Betty RF PortaPack UI Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f4ead8;
+      --muted: #b8a88f;
+      --dim: #7f6f62;
+      --bg: #090807;
+      --panel: #15100e;
+      --panel2: #201713;
+      --edge: #4f3328;
+      --gold: #d9ad56;
+      --teal: #43c8bf;
+      --rose: #c96d87;
+      --green: #7fb96c;
+      --red: #d76355;
+      --blue: #6b91d8;
+      --shadow: rgba(0, 0, 0, .46);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      background: #0b0908;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 22% 18%, rgba(217, 173, 86, .12), transparent 28%),
+        linear-gradient(145deg, #090706 0%, #15100e 46%, #080707 100%);
+    }
+
+    main {
+      width: min(1180px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 24px 0 30px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) 360px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .board {
+      min-height: calc(100vh - 54px);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      border-bottom: 1px solid rgba(217, 173, 86, .2);
+      padding-bottom: 14px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: 0;
+      font-weight: 760;
+    }
+
+    .title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+      max-width: 620px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .tab {
+      border: 1px solid rgba(217, 173, 86, .22);
+      color: var(--muted);
+      background: rgba(20, 14, 12, .84);
+      padding: 9px 12px;
+      border-radius: 7px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab[aria-selected="true"] {
+      color: var(--ink);
+      border-color: rgba(217, 173, 86, .68);
+      background: linear-gradient(180deg, rgba(87, 49, 38, .92), rgba(31, 21, 17, .92));
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .device-wrap {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+    }
+
+    .device {
+      width: 240px;
+      height: 320px;
+      image-rendering: pixelated;
+      transform: scale(1.18);
+      transform-origin: center;
+      margin: 30px 0;
+      border: 1px solid #5b3a2b;
+      box-shadow: 0 18px 42px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.08);
+      background: #0b0807;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .device-bg {
+      position: absolute;
+      left: 0;
+      top: 16px;
+      width: 240px;
+      height: 304px;
+      background-image:
+        linear-gradient(180deg, rgba(10, 7, 6, .16), rgba(10, 7, 6, .34)),
+        url("preview-assets/menu-bg.png");
+      background-size: 240px 304px;
+      background-repeat: no-repeat;
+    }
+
+    .statusbar {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 0 4px;
+      color: var(--gold);
+      background: linear-gradient(180deg, #1d1411, #0d0908);
+      border-bottom: 1px solid rgba(217, 173, 86, .52);
+      font: 700 12px/16px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .back { color: #f3c562; font-size: 15px; line-height: 1; }
+    .brand { flex: 1; white-space: nowrap; overflow: hidden; }
+    .icons { display: flex; gap: 3px; color: var(--ink); font-size: 10px; }
+    .ok { color: #93dc8c; }
+
+    .content {
+      position: absolute;
+      inset: 16px 0 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .hero-line {
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 7px 3px;
+      background: rgba(9, 7, 6, .52);
+      border-bottom: 1px solid rgba(217, 173, 86, .18);
+    }
+
+    .mode-title {
+      font: 700 13px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--ink);
+    }
+
+    .mode-chip {
+      font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #0b0a08;
+      background: var(--gold);
+      padding: 3px 4px;
+      border-radius: 2px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-content: start;
+      gap: 5px;
+      padding: 7px 6px 0;
+    }
+
+    .tile {
+      height: 45px;
+      border: 1px solid rgba(217, 173, 86, .2);
+      background:
+        linear-gradient(90deg, rgba(12, 9, 8, .91), rgba(23, 14, 12, .76));
+      box-shadow: inset 0 1px rgba(255,255,255,.05), 0 1px 4px rgba(0,0,0,.24);
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 5px;
+      align-items: center;
+      padding: 4px 5px;
+      overflow: hidden;
+    }
+
+    .tile.selected {
+      border-color: var(--gold);
+      background:
+        linear-gradient(180deg, rgba(88, 54, 38, .98), rgba(39, 23, 20, .98));
+      box-shadow: inset 0 0 0 1px rgba(255, 224, 156, .18), 0 0 0 1px rgba(0,0,0,.55);
+    }
+
+    .glyph {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      color: #080706;
+      background: var(--gold);
+      border-radius: 3px;
+      font: 900 12px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .rx .glyph { background: var(--teal); }
+    .tx .glyph { background: var(--red); }
+    .tool .glyph { background: var(--blue); }
+    .learn .glyph { background: var(--green); }
+
+    .tile-text { min-width: 0; }
+    .tile-title {
+      display: block;
+      color: var(--ink);
+      font: 700 11px/1.12 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tile-sub {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font: 700 8px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bottom-strip {
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      background: rgba(10, 7, 6, .68);
+      border-top: 1px solid rgba(217, 173, 86, .22);
+      font: 700 10px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--muted);
+    }
+
+    .peek {
+      position: absolute;
+      right: -8px;
+      bottom: 19px;
+      width: 68px;
+      height: 68px;
+      background: url("preview-assets/betty-peek.png") center / contain no-repeat;
+      filter: drop-shadow(0 2px 2px #000);
+      opacity: .95;
+      pointer-events: none;
+    }
+
+    .bitty {
+      position: absolute;
+      right: 4px;
+      bottom: 26px;
+      width: 58px;
+      height: 63px;
+      background: center / contain no-repeat;
+      opacity: .98;
+      filter: drop-shadow(0 2px 2px #000);
+    }
+
+    .bitty.read { background-image: url("preview-assets/bitty-read.png"); }
+    .bitty.run { background-image: url("preview-assets/bitty-run.png"); }
+
+    .notes {
+      display: grid;
+      gap: 12px;
+      align-content: center;
+    }
+
+    .note {
+      border: 1px solid rgba(217, 173, 86, .18);
+      background: rgba(14, 10, 9, .76);
+      padding: 14px;
+      border-radius: 8px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
+    }
+
+    .note h2 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      line-height: 1.1;
+      color: var(--gold);
+    }
+
+    .note p, .note li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .note p { margin: 0; }
+    .note ul { margin: 0; padding-left: 17px; }
+
+    .reference {
+      border-left: 1px solid rgba(217, 173, 86, .18);
+      padding-left: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .ref-card {
+      border: 1px solid rgba(217, 173, 86, .18);
+      background: rgba(12, 9, 8, .72);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .ref-card img {
+      display: block;
+      width: 100%;
+      image-rendering: pixelated;
+    }
+
+    .ref-card .caption {
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      border-top: 1px solid rgba(217, 173, 86, .14);
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    .swatch {
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: inset 0 1px rgba(255,255,255,.08);
+    }
+
+    .firmware-note {
+      color: var(--dim);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 900px) {
+      .layout, .stage { grid-template-columns: 1fr; }
+      .reference { border-left: 0; padding-left: 0; }
+      .header { align-items: start; flex-direction: column; }
+      .tabs { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="layout">
+      <section class="board">
+        <div class="header">
+          <div class="title">
+            <h1>Betty RF UI Preview</h1>
+            <p>Firmware-sized mockup for the next design pass: witch-library atmosphere, purpose-first labels, and hardware-safe bitmap placement.</p>
+          </div>
+          <div class="tabs" role="tablist" aria-label="Preview screen">
+            <button class="tab" type="button" aria-selected="true" data-screen="home">Home</button>
+            <button class="tab" type="button" aria-selected="false" data-screen="receive">Receive</button>
+            <button class="tab" type="button" aria-selected="false" data-screen="transmit">Transmit</button>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="device-wrap">
+            <div class="device" aria-label="240 by 320 PortaPack UI mockup">
+              <div class="device-bg"></div>
+              <div class="statusbar">
+                <span class="back">‹</span>
+                <span class="brand" id="brand">Betty RF</span>
+                <span class="icons">◌ ◈ ⛭</span>
+                <span class="ok">ok</span>
+              </div>
+              <div class="content">
+                <div class="hero-line">
+                  <span class="mode-title" id="mode-title">Forbidden Library</span>
+                  <span class="mode-chip" id="mode-chip">HOME</span>
+                </div>
+                <div class="grid" id="grid"></div>
+                <div class="bottom-strip">
+                  <span id="left-hint">Turn: choose</span>
+                  <span id="right-hint">Press: open</span>
+                </div>
+              </div>
+              <div class="peek" id="peek"></div>
+              <div class="bitty read" id="bitty" hidden></div>
+            </div>
+            <div class="firmware-note">240x320 preview. Firmware menu art remains SD-backed at 240x304.</div>
+          </div>
+
+          <div class="notes">
+            <article class="note">
+              <h2>Design Intent</h2>
+              <p>This pass keeps Mayhem's compact grid but makes the hierarchy more legible: action first, app name second, with Echidna visible in quiet spaces instead of fighting selected text.</p>
+            </article>
+            <article class="note">
+              <h2>Hardware Rules</h2>
+              <ul>
+                <li>No large art baked into flash.</li>
+                <li>Selected tiles stay solid for readability.</li>
+                <li>Character sprites appear only when large enough to read.</li>
+              </ul>
+            </article>
+            <article class="note">
+              <h2>Next Firmware Targets</h2>
+              <ul>
+                <li>Softer selected tile border and fill.</li>
+                <li>Consistent category title bar treatment.</li>
+                <li>Bitty as receive/transmit activity state, not tiny decoration.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <aside class="reference">
+        <div class="ref-card">
+          <img src="preview-assets/witches-splash.png" alt="Witch splash source art">
+          <div class="caption">Splash/source mood: high contrast, old-library warmth, witch imagery without sacrificing the small-screen text surface.</div>
+        </div>
+        <div class="ref-card">
+          <img src="preview-assets/menu-bg.png" alt="Menu background source art">
+          <div class="caption">Current SD menu background. Firmware should use it as atmosphere and restore it only where it will not leave stale pixels.</div>
+        </div>
+        <div class="ref-card">
+          <div class="caption">Palette</div>
+          <div class="palette" style="padding: 0 12px 12px">
+            <div class="swatch" style="background:#090807"></div>
+            <div class="swatch" style="background:#201713"></div>
+            <div class="swatch" style="background:#d9ad56"></div>
+            <div class="swatch" style="background:#43c8bf"></div>
+            <div class="swatch" style="background:#c96d87"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const screens = {
+      home: {
+        brand: "Betty RF",
+        title: "Forbidden Library",
+        chip: "HOME",
+        hints: ["Turn: choose", "Press: open"],
+        peek: true,
+        bitty: null,
+        items: [
+          ["Recon Sweep", "Recon", "rx", "R", true],
+          ["Capture RF", "Capture", "tx", "C"],
+          ["Replay RF", "Replay", "tx", "P"],
+          ["Signal View", "Looking Glass", "rx", "V"],
+          ["Receive", "RX Menu", "rx", "↓"],
+          ["Transmit", "TX Menu", "tx", "↑"],
+          ["Field Tools", "Utilities", "tool", "T"],
+          ["Arcade Lab", "Games", "learn", "G"],
+          ["Card Files", "File Manager", "tool", "F"],
+          ["System Set", "Settings", "tool", "S"]
+        ]
+      },
+      receive: {
+        brand: "Betty RF",
+        title: "Receive Grimoire",
+        chip: "RX",
+        hints: ["Bitty: reading", "SD art: live"],
+        peek: false,
+        bitty: "read",
+        items: [
+          ["Air Watch", "ADS-B", "rx", "A", true],
+          ["Weather Pic", "NOAA APT", "rx", "W"],
+          ["Pager Msgs", "POCSAG", "rx", "P"],
+          ["Ship Track", "AIS", "rx", "S"],
+          ["Plane Text", "ACARS", "rx", "T"],
+          ["Meter Read", "ERT", "rx", "M"],
+          ["Tire Watch", "TPMS", "rx", "T"],
+          ["Signal Find", "Search", "rx", "?"],
+          ["SubGHz Find", "SubGHz", "rx", "G"],
+          ["Audio Tune", "Audio RX", "rx", "♪"]
+        ]
+      },
+      transmit: {
+        brand: "Betty RF",
+        title: "Transmit Circle",
+        chip: "TX",
+        hints: ["Bitty: running", "TX guard visible"],
+        peek: false,
+        bitty: "run",
+        items: [
+          ["Replay RF", "Replay", "tx", "P", true],
+          ["Signal Make", "SigGen", "tx", "S"],
+          ["Pager Send", "POCSAG TX", "tx", "P"],
+          ["Tone Send", "Morse TX", "tx", "M"],
+          ["Beacon Sim", "GPS Sim", "tx", "G"],
+          ["Key Send", "Keyfob", "tx", "K"],
+          ["BLE Burst", "BLE Spam", "tx", "B"],
+          ["Remote Lab", "Remote", "tx", "R"],
+          ["SSTV Send", "SSTV TX", "tx", "V"],
+          ["Radio Guard", "TX Settings", "tool", "!"]
+        ]
+      }
+    };
+
+    const grid = document.querySelector("#grid");
+    const brand = document.querySelector("#brand");
+    const modeTitle = document.querySelector("#mode-title");
+    const modeChip = document.querySelector("#mode-chip");
+    const leftHint = document.querySelector("#left-hint");
+    const rightHint = document.querySelector("#right-hint");
+    const peek = document.querySelector("#peek");
+    const bitty = document.querySelector("#bitty");
+    const tabs = [...document.querySelectorAll(".tab")];
+
+    function render(screenName) {
+      const screen = screens[screenName];
+      brand.textContent = screen.brand;
+      modeTitle.textContent = screen.title;
+      modeChip.textContent = screen.chip;
+      leftHint.textContent = screen.hints[0];
+      rightHint.textContent = screen.hints[1];
+      peek.hidden = !screen.peek;
+      bitty.hidden = !screen.bitty;
+      bitty.className = `bitty ${screen.bitty || "read"}`;
+      grid.replaceChildren(...screen.items.map(([title, sub, kind, glyph, selected]) => {
+        const tile = document.createElement("div");
+        tile.className = `tile ${kind}${selected ? " selected" : ""}`;
+        tile.innerHTML = `<span class="glyph">${glyph}</span><span class="tile-text"><span class="tile-title">${title}</span><span class="tile-sub">${sub}</span></span>`;
+        return tile;
+      }));
+      tabs.forEach(tab => tab.setAttribute("aria-selected", String(tab.dataset.screen === screenName)));
+    }
+
+    tabs.forEach(tab => tab.addEventListener("click", () => render(tab.dataset.screen)));
+    render("home");
+  </script>
+</body>
+</html>
