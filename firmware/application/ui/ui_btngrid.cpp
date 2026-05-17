@@ -86,6 +86,41 @@ bool draw_sd_menu_bmp(const std::filesystem::path& path, Point origin, uint32_t 
     return true;
 }
 
+bool draw_sd_menu_bmp_region(const std::filesystem::path& path, Rect target) {
+    if (sd_card::status() != sd_card::Status::Mounted)
+        return false;
+
+    BMPFile bmp;
+    if (!bmp.open(path, true))
+        return false;
+
+    const uint32_t width = bmp.get_width();
+    const uint32_t height = bmp.get_real_height();
+    if (width == 0 || height == 0 || width > menu_asset_max_width)
+        return false;
+
+    const Rect bmp_rect{0, 0, static_cast<int>(width), static_cast<int>(height)};
+    const Rect screen_rect{0, 0, screen_width, screen_height};
+    const Rect clipped = target.intersect(bmp_rect).intersect(screen_rect);
+    if (clipped.is_empty())
+        return false;
+
+    ui::Color line_buffer[menu_asset_max_width];
+    for (int y = clipped.top(); y < clipped.bottom(); y++) {
+        if (!bmp.seek(clipped.left(), y))
+            return false;
+        if (!bmp.read_next_px_cnt(line_buffer, clipped.width(), false))
+            return false;
+
+        portapack::display.draw_pixels(
+            {static_cast<Coord>(clipped.left()), static_cast<Coord>(y), static_cast<Dim>(clipped.width()), 1},
+            line_buffer,
+            clipped.width());
+    }
+
+    return true;
+}
+
 }  // namespace
 
 /* MenuTileButton ***********************************************************/
@@ -120,17 +155,24 @@ void MenuTileButton::paint(Painter& painter) {
     const int title_h = style.font.line_height();
     const int subtitle_h = subtitle_font.line_height();
     const int content_h = title_h + subtitle_h;
+    const bool selected = has_focus() || highlighted();
 
     if (r.height() < content_h + (margin * 2)) {
         NewButton::paint(painter);
         return;
     }
 
+    if (!selected && !draw_sd_menu_bmp_region(betty_menu_background_bmp, r)) {
+        painter.fill_rectangle(
+            {r.left(), r.top() + 1, r.width() - 1, r.height() - 2},
+            style.background);
+    }
+
     painter.draw_rectangle({r.location(), {r.width(), 1}}, Theme::getInstance()->bg_light->background);
     painter.draw_rectangle({r.left(), r.top() + r.height() - 1, r.width(), 1}, Theme::getInstance()->bg_dark->background);
     painter.draw_rectangle({r.left() + r.width() - 1, r.top(), 1, r.height()}, Theme::getInstance()->bg_dark->background);
 
-    if (has_focus() || highlighted()) {
+    if (selected) {
         painter.fill_rectangle(
             {r.left(), r.top() + 1, r.width() - 1, r.height() - 2},
             style.background);
@@ -456,7 +498,6 @@ bool BtnGridView::set_highlighted(int32_t new_value, bool force_update) {
     }
 
     show_hide_arrows();
-    set_dirty();
 
     return true;
 }
