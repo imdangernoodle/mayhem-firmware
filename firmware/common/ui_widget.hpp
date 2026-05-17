@@ -101,6 +101,7 @@ class Widget {
     bool has_focus();
 
     virtual void paint(Painter& painter) = 0;
+    virtual void on_children_painted() { return; };
 
     virtual void on_show() { return; };
     virtual void on_hide() { return; };

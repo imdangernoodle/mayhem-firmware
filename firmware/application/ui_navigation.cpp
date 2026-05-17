@@ -91,7 +91,7 @@ const NavigationView::AppList NavigationView::appList = {
     {"recon", "Recon Sweep", HOME, Color::green(), &bitmap_icon_scanner, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<ReconView>(nav); }, "Recon"},
     {"capture", "Capture RF", HOME, Color::red(), &bitmap_icon_capture, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<CaptureAppView>(nav); }, "Capture"},
     {"replay", "Replay RF", HOME, Color::green(), &bitmap_icon_replay, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<PlaylistView>(nav); }, "Replay"},
-    {"lookingglass", "Witch Sight", HOME, Color::green(), &bitmap_icon_looking, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<GlassView>(nav); }, "Looking Glass"},
+    {"lookingglass", "Signal View", HOME, Color::green(), &bitmap_icon_looking, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<GlassView>(nav); }, "Looking Glass"},
     {nullptr, "Tools", HOME, Color::cyan(), &bitmap_icon_utilities, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<UtilitiesMenuView>(nav); }, "Utilities"},
     {nullptr, "Arcade", HOME, Color::cyan(), &bitmap_icon_games, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<GamesMenuView>(nav); }, "Games"},
     {nullptr, "Settings", HOME, Color::cyan(), &bitmap_icon_setup, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<SettingsMenuView>(nav); }, "System"},
@@ -103,9 +103,9 @@ const NavigationView::AppList NavigationView::appList = {
     {"audio", "Analog Audio", RX, Color::green(), &bitmap_icon_speaker, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<AnalogAudioView>(nav); }, "Audio"},
     {"blerx", "BLE Listen", RX, Color::green(), &bitmap_icon_btle, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<BLERxView>(nav); }, "BLE Rx"},
     {"pocsag", "Pager Msgs", RX, Color::green(), &bitmap_icon_pocsag, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<POCSAGAppView>(nav); }, "POCSAG"},
-    {"radiosonde", "Sonde Find", RX, Color::green(), &bitmap_icon_sonde, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<SondeView>(nav); }, "Radiosnde"},
+    {"radiosonde", "Sonde Find", RX, Color::green(), &bitmap_icon_sonde, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<SondeView>(nav); }, "Radiosonde"},
     {"search", "Signal Find", RX, Color::yellow(), &bitmap_icon_search, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<SearchView>(nav); }, "Search"},
-    {"subghzd", "SubGHz Find", RX, Color::yellow(), &bitmap_icon_remote, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<SubGhzDView>(nav); }, "SubGhzD"},
+    {"subghzd", "SubGHz Find", RX, Color::yellow(), &bitmap_icon_remote, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<SubGhzDView>(nav); }, "SubGHz"},
     {"weather", "Weather View", RX, Color::green(), &bitmap_icon_thermometer, [](NavigationView& nav) -> std::unique_ptr<View> { return std::make_unique<WeatherView>(nav); }, "Weather"},
 
     /* TX ********************************************************************/

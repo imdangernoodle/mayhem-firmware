@@ -50,6 +50,7 @@
 *.lst
 .dep/
 /build*
+/.toolchains/
 CMakeFiles/
 cmake-build-debug/
 

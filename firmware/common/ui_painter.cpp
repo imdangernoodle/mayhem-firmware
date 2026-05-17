@@ -134,12 +134,14 @@ void Painter::paint_widget(Widget* w) {
                 child->set_dirty();
                 paint_widget(child);
             }
+            w->on_children_painted();
             w->set_clean();
         } else {
             // Selectively paint all children.
             for (const auto child : w->children()) {
                 paint_widget(child);
             }
+            w->on_children_painted();
         }
     }
 }

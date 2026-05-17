@@ -96,6 +96,7 @@ class BtnGridView : public View {
     void on_focus() override;
     void on_blur() override;
     void paint(Painter& painter) override;
+    void on_children_painted() override;
     void on_show() override;
     void on_hide() override;
     bool on_key(const KeyEvent event) override;

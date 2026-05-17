@@ -50,32 +50,93 @@ std::string_view truncate_to_width(std::string_view text, const Font& font, int 
 static constexpr uint32_t menu_asset_max_width = 320;
 static const std::filesystem::path betty_menu_background_bmp = u"/BETTY/menu_bg.bmp";
 
+enum class MenuBackgroundState {
+    Unknown,
+    Available,
+    Unavailable,
+};
+
+MenuBackgroundState menu_background_state{MenuBackgroundState::Unknown};
+bool menu_background_fresh_for_child_paint{false};
+
+void reset_menu_background_state() {
+    menu_background_state = MenuBackgroundState::Unknown;
+    menu_background_fresh_for_child_paint = false;
+}
+
+void set_menu_background_available() {
+    menu_background_state = MenuBackgroundState::Available;
+}
+
+void set_menu_background_unavailable() {
+    menu_background_state = MenuBackgroundState::Unavailable;
+}
+
+bool menu_background_unavailable() {
+    return menu_background_state == MenuBackgroundState::Unavailable;
+}
+
+bool menu_background_available() {
+    return menu_background_state == MenuBackgroundState::Available;
+}
+
+bool menu_background_fresh() {
+    return menu_background_fresh_for_child_paint;
+}
+
+void mark_menu_background_fresh() {
+    menu_background_fresh_for_child_paint = true;
+}
+
+void clear_menu_background_fresh() {
+    menu_background_fresh_for_child_paint = false;
+}
+
 bool draw_sd_menu_bmp(const std::filesystem::path& path, Point origin, uint32_t max_width, uint32_t max_height) {
-    if (sd_card::status() != sd_card::Status::Mounted)
+    if (menu_background_unavailable())
         return false;
 
-    BMPFile bmp;
-    if (!bmp.open(path, true))
+    if (sd_card::status() != sd_card::Status::Mounted) {
+        set_menu_background_unavailable();
         return false;
+    }
+
+    BMPFile bmp;
+    if (!bmp.open(path, true)) {
+        set_menu_background_unavailable();
+        return false;
+    }
 
     const uint32_t width = bmp.get_width();
     const uint32_t height = bmp.get_real_height();
-    if (width == 0 || height == 0 || width > max_width || height > max_height)
+    if (width == 0 || height == 0 || width > max_width || height > max_height) {
+        set_menu_background_unavailable();
+        return false;
+    }
+    if (width != max_width || height != max_height)
         return false;
 
-    if (origin.x() < 0 || origin.y() < 0)
+    if (origin.x() < 0 || origin.y() < 0) {
+        set_menu_background_unavailable();
         return false;
+    }
 
     if ((origin.x() + static_cast<Coord>(width)) > screen_width ||
-        (origin.y() + static_cast<Coord>(height)) > screen_height)
+        (origin.y() + static_cast<Coord>(height)) > screen_height) {
+        set_menu_background_unavailable();
         return false;
+    }
 
     ui::Color line_buffer[menu_asset_max_width];
     for (uint32_t y = 0; y < height; y++) {
-        if (!bmp.seek(0, y))
+        if (!bmp.seek(0, y)) {
+            set_menu_background_unavailable();
             return false;
-        if (!bmp.read_next_px_cnt(line_buffer, width, false))
+        }
+        if (!bmp.read_next_px_cnt(line_buffer, width, false)) {
+            set_menu_background_unavailable();
             return false;
+        }
 
         portapack::display.draw_pixels(
             {origin.x(), static_cast<Coord>(origin.y() + y), static_cast<Dim>(width), 1},
@@ -83,34 +144,53 @@ bool draw_sd_menu_bmp(const std::filesystem::path& path, Point origin, uint32_t 
             width);
     }
 
+    set_menu_background_available();
     return true;
 }
 
 bool draw_sd_menu_bmp_region(const std::filesystem::path& path, Rect target) {
-    if (sd_card::status() != sd_card::Status::Mounted)
+    if (menu_background_unavailable())
         return false;
 
-    BMPFile bmp;
-    if (!bmp.open(path, true))
+    if (sd_card::status() != sd_card::Status::Mounted) {
+        set_menu_background_unavailable();
         return false;
+    }
+
+    BMPFile bmp;
+    if (!bmp.open(path, true)) {
+        set_menu_background_unavailable();
+        return false;
+    }
 
     const uint32_t width = bmp.get_width();
     const uint32_t height = bmp.get_real_height();
-    if (width == 0 || height == 0 || width > menu_asset_max_width)
+    if (width == 0 || height == 0 || width > menu_asset_max_width) {
+        set_menu_background_unavailable();
         return false;
+    }
 
     const Rect bmp_rect{0, 0, static_cast<int>(width), static_cast<int>(height)};
     const Rect screen_rect{0, 0, screen_width, screen_height};
-    const Rect clipped = target.intersect(bmp_rect).intersect(screen_rect);
-    if (clipped.is_empty())
+    const Rect visible_target = target.intersect(screen_rect);
+    const Rect clipped = visible_target.intersect(bmp_rect);
+    if (clipped.is_empty() ||
+        clipped.left() != visible_target.left() ||
+        clipped.top() != visible_target.top() ||
+        clipped.width() != visible_target.width() ||
+        clipped.height() != visible_target.height())
         return false;
 
     ui::Color line_buffer[menu_asset_max_width];
     for (int y = clipped.top(); y < clipped.bottom(); y++) {
-        if (!bmp.seek(clipped.left(), y))
+        if (!bmp.seek(clipped.left(), y)) {
+            set_menu_background_unavailable();
             return false;
-        if (!bmp.read_next_px_cnt(line_buffer, clipped.width(), false))
+        }
+        if (!bmp.read_next_px_cnt(line_buffer, clipped.width(), false)) {
+            set_menu_background_unavailable();
             return false;
+        }
 
         portapack::display.draw_pixels(
             {static_cast<Coord>(clipped.left()), static_cast<Coord>(y), static_cast<Dim>(clipped.width()), 1},
@@ -118,6 +198,7 @@ bool draw_sd_menu_bmp_region(const std::filesystem::path& path, Rect target) {
             clipped.width());
     }
 
+    set_menu_background_available();
     return true;
 }
 
@@ -162,7 +243,7 @@ void MenuTileButton::paint(Painter& painter) {
         return;
     }
 
-    if (!selected && !draw_sd_menu_bmp_region(betty_menu_background_bmp, r)) {
+    if (!selected && !menu_background_fresh() && !draw_sd_menu_bmp_region(betty_menu_background_bmp, r)) {
         painter.fill_rectangle(
             {r.left(), r.top() + 1, r.width() - 1, r.height() - 2},
             style.background);
@@ -382,6 +463,7 @@ void BtnGridView::show_hide_arrows() {
 }
 
 void BtnGridView::reload_items() {
+    reset_menu_background_state();
     menu_items.clear();
     on_populate();
     set_highlighted(highlighted_item, true);
@@ -522,13 +604,23 @@ void BtnGridView::on_blur() {
 }
 
 void BtnGridView::paint(Painter& painter) {
-    if (!draw_sd_menu_bmp(betty_menu_background_bmp, {0, 0}, screen_width, screen_height)) {
+    if (!draw_sd_menu_bmp(betty_menu_background_bmp, {0, 0}, parent_rect().width(), parent_rect().height())) {
         View::paint(painter);
+        clear_menu_background_fresh();
+    } else if (menu_background_available()) {
+        mark_menu_background_fresh();
+    } else {
+        clear_menu_background_fresh();
     }
+}
+
+void BtnGridView::on_children_painted() {
+    clear_menu_background_fresh();
 }
 
 void BtnGridView::on_show() {
     View::on_show();
+    reset_menu_background_state();
 
     sd_card_status_signal_token = sd_card::status_signal += [this](const sd_card::Status /*status*/) {
         this->reload_items();
@@ -603,10 +695,19 @@ void load_blacklist() {
 
 bool BtnGridView::blacklisted_app(const GridItem& new_item) {
     std::string app_name = "," + new_item.text + ",";
-    if (blacklist_data.size() < app_name.size())
+    if (blacklist_data.find(app_name) != std::string::npos)
+        return true;
+
+    if (new_item.subtitle == nullptr)
         return false;
 
-    return blacklist_data.find(app_name) != std::string::npos;
+    std::string subtitle_name = ",";
+    subtitle_name += new_item.subtitle;
+    subtitle_name += ",";
+    if (blacklist_data.size() < subtitle_name.size())
+        return false;
+
+    return blacklist_data.find(subtitle_name) != std::string::npos;
 }
 
 void BtnGridView::page_up() {
