@@ -7,7 +7,117 @@
 #include "i2cdevmanager.hpp"
 #include "i2cdev_ppmod.hpp"
 
+#include <string_view>
+
 namespace ui {
+
+namespace {
+
+struct ExternalAppSubtitle {
+    const char* filename;
+    const char* subtitle;
+};
+
+constexpr ExternalAppSubtitle external_app_subtitles[] = {
+    {"acars_rx", "Aircraft Msg"},
+    {"adsbtx", "Plane TX"},
+    {"adult_toys_controller", "BLE Control"},
+    {"afsk_rx", "Packet Audio"},
+    {"analogtv", "Analog TV"},
+    {"antenna_length", "Whip Calc"},
+    {"app_manager", "App Control"},
+    {"audio_test", "Audio Check"},
+    {"battleship", "Grid Game"},
+    {"bht_tx", "BHT Tone"},
+    {"blackjack", "Card Game"},
+    {"blespam", "BLE Spam"},
+    {"breakout", "Brick Game"},
+    {"calculator", "Field Math"},
+    {"coasterp", "Pager Alert"},
+    {"cvs_spam", "CVS Tone"},
+    {"debug_pmem", "Memory View"},
+    {"detector_rx", "Signal Sense"},
+    {"digitalrain_app", "Matrix Art"},
+    {"dinogame", "Dino Run"},
+    {"doom", "Retro Game"},
+    {"epirb_rx", "Beacon RX"},
+    {"epirb_tx", "Beacon TX"},
+    {"ert", "Meter Read"},
+    {"extsensors", "Sensor Read"},
+    {"flex_rx", "Flex RX"},
+    {"flex_tx", "Flex TX"},
+    {"flippertx", "Flipper TX"},
+    {"fmradio", "FM Radio"},
+    {"font_viewer", "Font View"},
+    {"foxhunt_rx", "Beacon Hunt"},
+    {"fpv_detect", "Drone Video"},
+    {"game2048", "Number Game"},
+    {"gfxeq", "Audio Viz"},
+    {"gpssim", "GPS Sim"},
+    {"hopper", "Freq Hop"},
+    {"jammer", "Noise TX"},
+    {"keeloqtx", "KeeLoq TX"},
+    {"keyfob", "Keyfob RX"},
+    {"kiss_tnc", "Packet TNC"},
+    {"lcr", "LCR Meter"},
+    {"level", "Bubble Level"},
+    {"lge", "LGE Tool"},
+    {"mcu_temperature", "MCU Temp"},
+    {"mdc_tx", "MDC TX"},
+    {"metronome", "Beat Timer"},
+    {"morse_practice", "Code Drill"},
+    {"morse_radio", "Code RX"},
+    {"morseradiotx", "Code TX"},
+    {"noaaapt_rx", "Weather Sat"},
+    {"nrf_rx", "NRF Sniff"},
+    {"ook_editor", "OOK Edit"},
+    {"ookbrute", "OOK Sweep"},
+    {"p25_tx", "P25 TX"},
+    {"pacman_app", "Maze Game"},
+    {"playlist_editor", "Replay Edit"},
+    {"pocsag_tx", "Pager TX"},
+    {"protoview", "Proto View"},
+    {"random_password", "Password Gen"},
+    {"remote", "Remote RX"},
+    {"rtty_rx", "RTTY RX"},
+    {"rtty_tx", "RTTY TX"},
+    {"same_tx", "Alert TX"},
+    {"scanner", "Scan Bands"},
+    {"sd_wipe", "Card Wipe"},
+    {"sdusb", "USB Disk"},
+    {"shoppingcart_lock", "Cart Unlock"},
+    {"siggen", "Signal Gen"},
+    {"snake", "Snake Game"},
+    {"soundboard", "Audio Board"},
+    {"spaceinv", "Arcade Game"},
+    {"spainter", "Paint RF"},
+    {"sstvrx", "SSTV RX"},
+    {"sstvtx", "SSTV TX"},
+    {"stopwatch", "Lap Timer"},
+    {"subcarrx", "Subcarrier"},
+    {"tetris", "Block Game"},
+    {"time_sink", "Time Tool"},
+    {"tpmsrx", "TPMS RX"},
+    {"tpmstx", "TPMS TX"},
+    {"tuner", "Freq Tune"},
+    {"two_tone_pager", "Tone Page"},
+    {"two_tone_rx", "Tone RX"},
+    {"view_wav", "WAV View"},
+    {"wardrivemap", "WiFi Map"},
+    {"waterfall_designer", "Waterfall"},
+    {"wefax_rx", "Weather Fax"},
+};
+
+const char* subtitle_for_external_app(std::string_view filename) {
+    for (const auto& app : external_app_subtitles) {
+        if (filename == app.filename)
+            return app.subtitle;
+    }
+
+    return nullptr;
+}
+
+}  // namespace
 
 /* static */ std::vector<std::unique_ptr<DynamicBitmap<16, 16>>> ExternalItemsMenuLoader::bitmaps;
 
@@ -207,6 +317,8 @@ std::vector<ExternalItemsMenuLoader::GridItemEx> ExternalItemsMenuLoader::load_e
 
         GridItemEx gridItem = {};
         gridItem.text = reinterpret_cast<char*>(&application_information.app_name[0]);
+        const auto app_short_name = filePath.stem().string();
+        gridItem.subtitle = subtitle_for_external_app(app_short_name);
 
         if (versionMatches) {
             gridItem.color = Color((uint16_t)application_information.icon_color);
@@ -259,6 +371,8 @@ std::vector<ExternalItemsMenuLoader::GridItemEx> ExternalItemsMenuLoader::load_e
 
         GridItemEx gridItem = {};
         gridItem.text = reinterpret_cast<char*>(&application_information.app_name[0]);
+        const auto app_short_name = filePath.stem().string();
+        gridItem.subtitle = subtitle_for_external_app(app_short_name);
 
         gridItem.color = Color((uint16_t)application_information.icon_color);
 

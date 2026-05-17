@@ -520,7 +520,7 @@ class NewButton : public Widget {
     void set_color(Color value);
     void set_bg_color(Color value);
     void set_vertical_center(bool value);
-    std::string text() const;
+    const std::string& text() const;
     const Bitmap* bitmap();
     ui::Color color();
 

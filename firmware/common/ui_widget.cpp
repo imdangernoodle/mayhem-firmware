@@ -1337,7 +1337,7 @@ void NewButton::getWidgetName(std::string& result) {
     result = "NewButton";
 }
 
-std::string NewButton::text() const {
+const std::string& NewButton::text() const {
     return text_;
 }
 

@@ -47,11 +47,24 @@ struct GridItem {
     ui::Color color;
     const Bitmap* bitmap;
     std::function<void(void)> on_select;
+    const char* subtitle = nullptr;
 
     // TODO: Prevent default-constructed GridItems.
 };
 
 void load_blacklist();
+
+class MenuTileButton final : public NewButton {
+   public:
+    using NewButton::NewButton;
+
+    void set_subtitle(const char* value);
+    void getAccessibilityText(std::string& result) override;
+    void paint(Painter& painter) override;
+
+   private:
+    const char* subtitle_ = nullptr;
+};
 
 class BtnGridView : public View {
    public:
@@ -82,16 +95,21 @@ class BtnGridView : public View {
     void show_hide_arrows();
     void on_focus() override;
     void on_blur() override;
+    void paint(Painter& painter) override;
     void on_show() override;
     void on_hide() override;
     bool on_key(const KeyEvent event) override;
     bool on_encoder(const EncoderEvent event) override;
-    bool blacklisted_app(GridItem new_item);
+    bool blacklisted_app(const GridItem& new_item);
 
     void reload_items();
     void update_items();
     void set_btn_height_fixed(uint8_t h) {
         button_h = h;
+    }
+    void set_btn_bg_color(Color color) {
+        button_bg_color_ = color;
+        button_bg_color_set_ = true;
     }
 
     void page_up();
@@ -105,7 +123,7 @@ class BtnGridView : public View {
     bool keep_highlight{false};
 
     std::vector<GridItem> menu_items{};
-    std::vector<std::unique_ptr<NewButton>> menu_item_views{};
+    std::vector<std::unique_ptr<MenuTileButton>> menu_item_views{};
 
     Button button_pgup{
         {0, 1324, 120, 16},
@@ -117,6 +135,8 @@ class BtnGridView : public View {
 
     int button_w = screen_width / rows_;
     int button_h = 48;
+    Color button_bg_color_{Color::black()};
+    bool button_bg_color_set_{false};
     size_t displayed_max{0};
     size_t highlighted_item{0};
     size_t offset{0};

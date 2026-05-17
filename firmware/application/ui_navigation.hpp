@@ -80,6 +80,7 @@ class AppInfo {
     Color iconColor;
     const Bitmap* icon;
     ViewProducer producer;
+    const char* subtitle = nullptr;
 };
 
 struct AppInfoConsole {

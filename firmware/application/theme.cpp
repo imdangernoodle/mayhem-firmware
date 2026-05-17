@@ -338,133 +338,133 @@ ThemeAqua::ThemeAqua() {
 ThemeDefault::ThemeDefault() {
     bg_lightest = new Style{
         .font = font::fixed_8x16,
-        .background = Color::white(),
-        .foreground = Color::black(),
+        .background = {255, 246, 207},
+        .foreground = {9, 7, 13},
     };
     bg_lightest_small = new Style{
         .font = font::fixed_5x8,
-        .background = Color::white(),
-        .foreground = Color::black(),
+        .background = {255, 246, 207},
+        .foreground = {9, 7, 13},
     };
     bg_light = new Style{
         .font = font::fixed_8x16,
-        .background = Color::light_grey(),
-        .foreground = Color::white(),
+        .background = {58, 45, 69},
+        .foreground = {255, 246, 207},
     };
     bg_medium = new Style{
         .font = font::fixed_8x16,
-        .background = Color::grey(),
-        .foreground = Color::white(),
+        .background = {32, 17, 47},
+        .foreground = {255, 246, 207},
     };
     bg_dark = new Style{
         .font = font::fixed_8x16,
-        .background = Color::dark_grey(),
-        .foreground = Color::white(),
+        .background = {16, 9, 26},
+        .foreground = {231, 196, 106},
     };
     bg_darker = new Style{
         .font = font::fixed_8x16,
-        .background = Color::darker_grey(),
-        .foreground = Color::white(),
+        .background = {10, 7, 16},
+        .foreground = {210, 168, 255},
     };
 
     bg_darkest = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::white(),
+        .background = {5, 3, 7},
+        .foreground = {255, 246, 207},
     };
     bg_darkest_small = new Style{
         .font = font::fixed_5x8,
-        .background = Color::black(),
-        .foreground = Color::white(),
+        .background = {5, 3, 7},
+        .foreground = {255, 246, 207},
     };
 
     bg_important_small = new Style{
         .font = font::fixed_5x8,
-        .background = Color::yellow(),
-        .foreground = Color::black(),
+        .background = {231, 196, 106},
+        .foreground = {18, 9, 26},
     };
 
     error_dark = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::red(),
+        .background = {5, 3, 7},
+        .foreground = {255, 87, 87},
     };
     warning_dark = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::yellow(),
+        .background = {5, 3, 7},
+        .foreground = {231, 196, 106},
     };
     ok_dark = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::green(),
+        .background = {5, 3, 7},
+        .foreground = {126, 220, 154},
     };
 
     fg_dark = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::dark_grey(),
+        .background = {5, 3, 7},
+        .foreground = {92, 70, 106},
     };
     fg_medium = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::grey(),
+        .background = {5, 3, 7},
+        .foreground = {210, 168, 255},
     };
     fg_light = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::light_grey(),
+        .background = {5, 3, 7},
+        .foreground = {255, 246, 207},
     };
 
     fg_red = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::red(),
+        .background = {5, 3, 7},
+        .foreground = {255, 87, 87},
     };
     fg_green = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::green(),
+        .background = {5, 3, 7},
+        .foreground = {126, 220, 154},
     };
     fg_yellow = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::yellow(),
+        .background = {5, 3, 7},
+        .foreground = {231, 196, 106},
     };
     fg_orange = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::orange(),
+        .background = {5, 3, 7},
+        .foreground = {241, 154, 90},
     };
     fg_blue = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::blue(),
+        .background = {5, 3, 7},
+        .foreground = {112, 176, 255},
     };
     fg_cyan = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::cyan(),
+        .background = {5, 3, 7},
+        .foreground = {137, 220, 211},
     };
     fg_darkcyan = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::dark_cyan(),
+        .background = {5, 3, 7},
+        .foreground = {77, 150, 143},
     };
     fg_magenta = new Style{
         .font = font::fixed_8x16,
-        .background = Color::black(),
-        .foreground = Color::magenta(),
+        .background = {5, 3, 7},
+        .foreground = {210, 168, 255},
     };
 
     option_active = new Style{
         .font = font::fixed_8x16,
-        .background = Color::blue(),
-        .foreground = Color::white(),
+        .background = {231, 196, 106},
+        .foreground = {18, 9, 26},
     };
 
-    status_active = new Color{0, 255, 0};  // green, the status bar icons when active
-    bg_table_header = new Color{0, 0, 255};
+    status_active = new Color{231, 196, 106};
+    bg_table_header = new Color{32, 17, 47};
 }
 
 ThemeGreen::ThemeGreen() {
